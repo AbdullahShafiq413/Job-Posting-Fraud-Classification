@@ -1,0 +1,145 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Job Post Checker – Fake or Real?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --bg:#0b1020; --card:#121933; --muted:#a3acc5; --text:#e9ecf5; --good:#2bb673; --bad:#e24c4b; --accent:#5b8cff; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #0b1020, #0f1630); color: var(--text);
+      display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px;
+    }
+    .wrap { width: 100%; max-width: 780px; }
+    .card {
+      background: radial-gradient(circle at top left, rgba(91,140,255,0.18), transparent 55%), var(--card);
+      border-radius: 18px; padding: 20px 20px 18px; border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.6);
+    }
+    h1 { font-size: 22px; margin: 0 0 4px; }
+    p.lead { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
+    form { display: flex; flex-direction: column; gap: 10px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 12px; color: var(--muted); }
+    textarea {
+      background: #0e1530; color: var(--text); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 10px 12px; font-size: 14px; outline: none;
+      min-height: 140px; resize: vertical;
+    }
+    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,140,255,0.15); }
+    .actions { display: flex; gap: 10px; margin-top: 6px; }
+    button {
+      cursor: pointer; border: 0; border-radius: 12px; padding: 10px 14px; font-weight: 600; font-size: 14px;
+      background: var(--accent); color: white;
+    }
+    button.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--text); }
+    .result {
+      margin-top: 16px; padding: 16px;
+      border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.12);
+    }
+    .pill {
+      display: inline-block; padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: 12px;
+    }
+    .pill.good { background: rgba(43,182,115,0.2); color: #b9ffd8; border: 1px solid rgba(43,182,115,0.5); }
+    .pill.bad  { background: rgba(226,76,75,0.2);  color: #ffd0cf; border: 1px solid rgba(226,76,75,0.5); }
+    .muted { color: var(--muted); font-size: 13px }
+    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap }
+    small { color: var(--muted); }
+    .footer { margin-top: 10px; font-size:12px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Job Post Checker</h1>
+      <p class="lead">Paste any job description below and the model will tell you if it is likely <b>Fake</b> or <b>Real</b>.</p>
+
+      <form id="predict-form">
+        <div class="field">
+          <label for="text">Job description (text)</label>
+          <textarea id="text" name="text" placeholder="Paste the job posting text here..." required></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit">Check Job Post</button>
+          <button type="button" class="secondary" id="reset">Reset</button>
+        </div>
+      </form>
+
+      <div id="result" class="result" style="display:none;"></div>
+      <div class="footer">
+        <small>Note: 0 = Real job, 1 = Fake job (as per client mapping). This is an ML demo, not financial/employment advice.</small>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("predict-form");
+    const resultBox = document.getElementById("result");
+    const resetBtn = document.getElementById("reset");
+
+    function renderResult(resp) {
+        const isFake = resp.label_id === 1;
+        const label = isFake ? "Fake Job" : "Real Job";
+        const conf = (resp.score_fake * 100).toFixed(1);
+
+        resultBox.style.display = "block";
+
+        resultBox.innerHTML = `
+            <div class="row">
+            <span class="pill ${isFake ? "bad" : "good"}">${label}</span>
+            <small class="muted">Confidence: ${conf}%</small>
+            </div>
+        `;
+        }
+
+
+    function renderError(message) {
+      resultBox.style.display = "block";
+      resultBox.innerHTML = `
+        <div class="row">
+          <span class="pill bad">Error</span>
+        </div>
+        <div style="margin-top:8px;">
+          <small class="muted">${message}</small>
+        </div>
+      `;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      resultBox.style.display = "block";
+      resultBox.innerHTML = `<small class="muted">Checking job post...</small>`;
+
+      const formData = new FormData(form);
+      const text = formData.get("text") || "";
+
+      try {
+        const res = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+
+        const data = await res.json();
+        if (!data.ok) {
+          renderError(data.error || "Validation error");
+          return;
+        }
+        renderResult(data);
+      } catch (err) {
+        renderError("Unable to reach backend");
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      form.reset();
+      resultBox.style.display = "none";
+      resultBox.innerHTML = "";
+    });
+  </script>
+</body>
+</html>
