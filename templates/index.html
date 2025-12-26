@@ -1,4 +1,3 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,72 +5,238 @@
   <title>Job Post Checker – Fake or Real?</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root { --bg:#0b1020; --card:#121933; --muted:#a3acc5; --text:#e9ecf5; --good:#2bb673; --bad:#e24c4b; --accent:#5b8cff; }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg, #0b1020, #0f1630); color: var(--text);
-      display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px;
+    :root{
+      --bg:#0b1020;
+      --card:#121933;
+      --muted:#a3acc5;
+      --text:#e9ecf5;
+      --accent:#5b8cff;
+
+      --green:#2bb673;
+      --yellow:#f3c742;
+      --red:#e24c4b;
     }
-    .wrap { width: 100%; max-width: 780px; }
-    .card {
-      background: radial-gradient(circle at top left, rgba(91,140,255,0.18), transparent 55%), var(--card);
-      border-radius: 18px; padding: 20px 20px 18px; border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 18px 45px rgba(0,0,0,0.6);
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #0b1020, #0f1630);
+      color: var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      padding:24px;
     }
-    h1 { font-size: 22px; margin: 0 0 4px; }
-    p.lead { margin: 0 0 16px; color: var(--muted); font-size: 13px; }
-    form { display: flex; flex-direction: column; gap: 10px; }
-    .field { display: flex; flex-direction: column; gap: 6px; }
-    label { font-size: 12px; color: var(--muted); }
-    textarea {
-      background: #0e1530; color: var(--text); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px; padding: 10px 12px; font-size: 14px; outline: none;
-      min-height: 140px; resize: vertical;
+    .wrap{ width:100%; max-width:860px; }
+    .card{
+      background: rgba(18,25,51,0.92);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      overflow:hidden;
     }
-    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(91,140,255,0.15); }
-    .actions { display: flex; gap: 10px; margin-top: 6px; }
-    button {
-      cursor: pointer; border: 0; border-radius: 12px; padding: 10px 14px; font-weight: 600; font-size: 14px;
-      background: var(--accent); color: white;
+    .head{
+      padding:22px 22px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    button.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--text); }
-    .result {
-      margin-top: 16px; padding: 16px;
-      border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.12);
+    .title{ margin:0; font-size:22px; letter-spacing:.2px; }
+    .sub{ margin:8px 0 0; color:var(--muted); line-height:1.35; }
+    .body{ padding: 18px 22px 22px; }
+
+    textarea{
+      width:100%;
+      min-height: 210px;
+      resize: vertical;
+      border-radius: 12px;
+      padding: 14px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(9,13,28,0.75);
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+      line-height: 1.5;
     }
-    .pill {
-      display: inline-block; padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: 12px;
+    textarea::placeholder{ color: rgba(163,172,197,0.8); }
+
+    .row{
+      display:flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      align-items:center;
     }
-    .pill.good { background: rgba(43,182,115,0.2); color: #b9ffd8; border: 1px solid rgba(43,182,115,0.5); }
-    .pill.bad  { background: rgba(226,76,75,0.2);  color: #ffd0cf; border: 1px solid rgba(226,76,75,0.5); }
-    .muted { color: var(--muted); font-size: 13px }
-    .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap }
-    small { color: var(--muted); }
-    .footer { margin-top: 10px; font-size:12px; color: var(--muted); }
+    button{
+      border:0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      cursor:pointer;
+      font-weight: 600;
+      letter-spacing:.2px;
+    }
+    .primary{
+      background: var(--accent);
+      color: white;
+    }
+    .ghost{
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    .result{
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(9,13,28,0.55);
+      display:none;
+    }
+
+    /* ---------- BIG TRAFFIC LIGHT ---------- */
+    .traffic-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .traffic-light{
+      width: 130px;
+      height: 240px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+      padding: 14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .lamp{
+      width: 88px;
+      height: 88px;
+      border-radius: 999px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      position: relative;
+      box-shadow: inset 0 0 18px rgba(0,0,0,0.55);
+      opacity: 0.18;          /* OFF state */
+      filter: grayscale(0.5);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .lamp::after{
+      content:"";
+      position:absolute;
+      inset: 14px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.55), rgba(255,255,255,0.0) 55%);
+      pointer-events:none;
+      opacity: 0.35;
+    }
+
+    /* ON states (glow) */
+    .lamp.on{
+      opacity: 1;
+      transform: scale(1.03);
+      filter: none;
+    }
+    .lamp.red.on{
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(226,76,75,0.85) 55%, rgba(226,76,75,0.25));
+      box-shadow:
+        0 0 22px rgba(226,76,75,0.55),
+        inset 0 0 20px rgba(0,0,0,0.4);
+      border-color: rgba(226,76,75,0.55);
+    }
+    .lamp.yellow.on{
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(243,199,66,0.88) 55%, rgba(243,199,66,0.25));
+      box-shadow:
+        0 0 22px rgba(243,199,66,0.55),
+        inset 0 0 20px rgba(0,0,0,0.4);
+      border-color: rgba(243,199,66,0.55);
+    }
+    .lamp.green.on{
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(43,182,115,0.85) 55%, rgba(43,182,115,0.25));
+      box-shadow:
+        0 0 22px rgba(43,182,115,0.55),
+        inset 0 0 20px rgba(0,0,0,0.4);
+      border-color: rgba(43,182,115,0.55);
+    }
+
+    .meta{
+      flex: 1;
+      min-width: 280px;
+    }
+    .label{
+      font-size: 20px;
+      font-weight: 900;
+      margin: 0;
+    }
+    .desc{
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .kpi{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+    }
+    .kpi .k{ font-size:12px; color: var(--muted); }
+    .kpi .v{ margin-top: 6px; font-size: 16px; font-weight: 700; }
+
+    .err{ border-color: rgba(226,76,75,0.5); }
+
+    @media (max-width: 720px){
+      .grid{ grid-template-columns: 1fr; }
+      .traffic-light{ width: 120px; height: 220px; }
+      .lamp{ width: 82px; height: 82px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>Job Post Checker</h1>
-      <p class="lead">Paste any job description below and the model will tell you if it is likely <b>Fake</b> or <b>Real</b>.</p>
+      <div class="head">
+        <h1 class="title">Job Post Checker</h1>
+        <p class="sub">
+          You’ll get a BIG traffic light:
+          <b>Red</b> = Fake,
+          <b>Yellow</b> = Real but low confidence,
+          <b>Green</b> = Real with high confidence.
+        </p>
+      </div>
 
-      <form id="predict-form">
-        <div class="field">
-          <label for="text">Job description (text)</label>
-          <textarea id="text" name="text" placeholder="Paste the job posting text here..." required></textarea>
+      <div class="body">
+        <form id="predict-form">
+          <textarea id="text" name="text" placeholder="Paste job description here..."></textarea>
+
+          <div class="row">
+            <button class="primary" type="submit" id="btn">Check Job</button>
+            <button class="ghost" type="button" id="reset">Reset</button>
+            <span class="muted" id="hint"></span>
+          </div>
+        </form>
+
+        <div class="result" id="result"></div>
+
+        <div style="margin-top:14px">
+          <small class="muted">
+            Mapping: <b>0 = Real</b>, <b>1 = Fake</b>.
+          </small>
         </div>
-
-        <div class="actions">
-          <button type="submit">Check Job Post</button>
-          <button type="button" class="secondary" id="reset">Reset</button>
-        </div>
-      </form>
-
-      <div id="result" class="result" style="display:none;"></div>
-      <div class="footer">
-        <small>Note: 0 = Real job, 1 = Fake job (as per client mapping). This is an ML demo, not financial/employment advice.</small>
       </div>
     </div>
   </div>
@@ -80,58 +245,111 @@
     const form = document.getElementById("predict-form");
     const resultBox = document.getElementById("result");
     const resetBtn = document.getElementById("reset");
+    const hint = document.getElementById("hint");
+    const btn = document.getElementById("btn");
 
-    function renderResult(resp) {
-        const isFake = resp.label_id === 1;
-        const label = isFake ? "Fake Job" : "Real Job";
-        const conf = (resp.score_fake * 100).toFixed(1);
+    function pct(x){
+      return (Number(x) * 100).toFixed(1) + "%";
+    }
 
-        resultBox.style.display = "block";
-
-        resultBox.innerHTML = `
-            <div class="row">
-            <span class="pill ${isFake ? "bad" : "good"}">${label}</span>
-            <small class="muted">Confidence: ${conf}%</small>
-            </div>
-        `;
-        }
-
-
-    function renderError(message) {
+    function renderError(msg){
       resultBox.style.display = "block";
+      resultBox.className = "result err";
       resultBox.innerHTML = `
-        <div class="row">
-          <span class="pill bad">Error</span>
+        <div class="traffic-wrap">
+          <div class="traffic-light" aria-label="Traffic light">
+            <div class="lamp red on"></div>
+            <div class="lamp yellow"></div>
+            <div class="lamp green"></div>
+          </div>
+          <div class="meta">
+            <p class="label">Error</p>
+            <p class="desc">${msg}</p>
+          </div>
         </div>
-        <div style="margin-top:8px;">
-          <small class="muted">${message}</small>
+      `;
+    }
+
+    function renderResult(resp){
+      const signal = (resp.signal || "yellow").toLowerCase(); // red|yellow|green
+      const isFake = resp.label_id === 1;
+
+      const labelTxt = isFake ? "Fake Job" : "Real Job";
+
+      let desc = "";
+      if (signal === "red") desc = "Model thinks this posting is FAKE.";
+      else if (signal === "green") desc = "Model thinks this posting is REAL with HIGH confidence.";
+      else desc = "Model thinks this posting is REAL but confidence is LOW.";
+
+      const redOn = signal === "red" ? "on" : "";
+      const yellowOn = signal === "yellow" ? "on" : "";
+      const greenOn = signal === "green" ? "on" : "";
+
+      resultBox.style.display = "block";
+      resultBox.className = "result";
+      resultBox.innerHTML = `
+        <div class="traffic-wrap">
+          <div class="traffic-light" aria-label="Traffic light">
+            <div class="lamp red ${redOn}"></div>
+            <div class="lamp yellow ${yellowOn}"></div>
+            <div class="lamp green ${greenOn}"></div>
+          </div>
+
+          <div class="meta">
+            <p class="label">${labelTxt}</p>
+            <p class="desc">${desc}</p>
+
+            <div class="grid">
+              <div class="kpi">
+                <div class="k">Confidence (predicted)</div>
+                <div class="v">${pct(resp.confidence)}</div>
+              </div>
+              <div class="kpi">
+                <div class="k">P(Real)</div>
+                <div class="v">${pct(resp.score_real)}</div>
+              </div>
+              <div class="kpi">
+                <div class="k">P(Fake)</div>
+                <div class="v">${pct(resp.score_fake)}</div>
+              </div>
+            </div>
+
+            <div class="desc" style="margin-top:10px">
+              Green rule: Real and P(Real) ≥ ${pct(resp.high_conf_real)}.
+            </div>
+          </div>
         </div>
       `;
     }
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      resultBox.style.display = "block";
-      resultBox.innerHTML = `<small class="muted">Checking job post...</small>`;
+      const text = document.getElementById("text").value.trim();
+      if(!text){
+        renderError("Please paste a job description first.");
+        return;
+      }
 
-      const formData = new FormData(form);
-      const text = formData.get("text") || "";
+      hint.textContent = "Checking...";
+      btn.disabled = true;
 
-      try {
-        const res = await fetch("/predict", {
+      try{
+        const r = await fetch("/predict", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify({ text })
         });
-
-        const data = await res.json();
-        if (!data.ok) {
-          renderError(data.error || "Validation error");
-          return;
+        const data = await r.json();
+        if(!r.ok || !data.ok){
+          renderError(data.error || "Something went wrong");
+        }else{
+          renderResult(data);
         }
-        renderResult(data);
-      } catch (err) {
+      }catch(err){
         renderError("Unable to reach backend");
+      }finally{
+        hint.textContent = "";
+        btn.disabled = false;
       }
     });
 
@@ -139,6 +357,8 @@
       form.reset();
       resultBox.style.display = "none";
       resultBox.innerHTML = "";
+      hint.textContent = "";
+      btn.disabled = false;
     });
   </script>
 </body>
